@@ -1,9 +1,9 @@
 package org.dreamsellers.model;
 
 
+import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
-import org.dreamsellers.types.Role;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,4 +28,7 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user")
     private AuthEntity auth;
+
+    @OneToMany(mappedBy = "user")
+    private List<BookingEntity> bookings = new ArrayList<>();
 }
