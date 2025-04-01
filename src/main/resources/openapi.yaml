@@ -1,0 +1,1406 @@
+openapi: 3.0.4
+info:
+  title: DreamSellers API
+  description: |-
+    This is the API specification for the DreamSellers platform, a web application for booking experience-based gifts. Users can browse, book, and manage various adventure and leisure activities, while businesses can list and manage their experience offerings.
+    
+    Some useful links:
+    - [DreamSellers Platform](https://dreamsellers.com)
+    - [API Documentation](https://api.dreamsellers.com/docs)
+  termsOfService: https://dreamsellers.com/terms/
+  contact:
+    email: support@dreamsellers.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about DreamSellers
+  url: https://dreamsellers.com
+servers:
+  - url: https://api.dreamsellers.com
+    description: Production server
+  - url: https://staging.api.dreamsellers.com
+    description: Staging server
+
+
+
+tags:
+  - name: auth
+    description: Operations related to authenticatiing userrs
+  - name: user
+    description: Operations about user
+  - name: business
+    description: Everything about business
+  - name: listing
+    description: Access to listings made by businesses
+  - name: bookings
+    description: Operations related to booking system
+  - name: payments
+    description: Payment operations
+  - name: admin
+    description: Access to admin panel
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login user into the system.
+      description: Endpoint for handling logging in.
+      operationId: userLogin
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid username/password supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Wrong password or login, try again"
+        '401':
+          description: Unauthorized, invalid username/password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Wrong password or login, try again"
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "To many requests, try again later"
+        '500':
+          description: Internal server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error processing the request"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register user in the system
+      description: Registers new users in the system
+      operationId: userRegister
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        "409":
+          description: Conflict - email or username already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An account with this email already exists."
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "To many requests, try again later"
+        '500':
+          description: Internal server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error processing the request"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/logout:
+    get:
+      tags:
+        - auth
+      summary: Logs out current logged in user session.
+      description: Log user out of the system.
+      operationId: logoutUser
+      parameters: []
+      responses:
+        '500':
+          description: Internal server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error processing the request"
+        '200':
+          description: successful operation
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/request-password-reset:
+    post:
+      summary: Request password reset
+      description: Sends an email with a password reset link.
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Password reset email sent.
+        "400":
+          description: Invalid email.
+        "404":
+          description: User not found.
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Allows a user to reset their password using a token.
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password reset successfully.
+        "400":
+          description: Invalid token or password.
+
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Get user by user id.
+      description: Get user detail based on username.
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be fetched. Use id1 for testing
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - user
+      summary: Update user resource.
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: bad request
+        '404':
+          description: user not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - user
+      summary: Delete user resource.
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/notifications:
+    get:
+      summary: Get user notifications
+      description: Retrieves notifications for the authenticated user.
+      tags:
+        - user
+      responses:
+        "200":
+          description: List of notifications.
+        "401":
+          description: Unauthorized.
+
+    put:
+      summary: Mark notifications as read
+      description: Marks all notifications as read for the authenticated user.
+      tags:
+        - user
+      responses:
+        "200":
+          description: Notifications marked as read.
+        "401":
+          description: Unauthorized.
+
+  /listings/get_all:
+    get:
+      summary: Get all activity listings
+      description: Retrieve a list of all available activity listings with filtering and sorting.
+      tags:
+        - listing
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: Filter by location
+          schema:
+            type: string
+        - name: rating
+          in: query
+          description: Filter by minimum rating
+          schema:
+            type: number
+            format: float
+        - name: search
+          in: query
+          description: Search for activities by keyword
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of activity listings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+  /listings/create:
+    post:
+      summary: Create a new activity listing
+      description: Allows a seller to create a new activity listing.
+      tags:
+        - listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Listing"
+      responses:
+        "201":
+          description: Listing created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "401":
+          description: Unauthorized - only sellers can create listings.
+  /listings/{listingId}:
+    get:
+      summary: Get listing details
+      description: Retrieve details of a specific activity listing.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Listing details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          description: Listing not found.
+
+    put:
+      summary: Update listing
+      description: Allows a seller to update their activity listing.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Listing"
+      responses:
+        "200":
+          description: Listing updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "403":
+          description: Forbidden - only the listing owner can update it.
+        "404":
+          description: Listing not found.
+
+    delete:
+      summary: Delete listing
+      description: Allows a seller to remove their activity listing.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Listing deleted successfully.
+        "403":
+          description: Forbidden - only the listing owner can delete it.
+        "404":
+          description: Listing not found.
+  /listings/{listingId}/reviews:
+    post:
+      summary: Add a review for a listing
+      description: Allows customers to leave a review for a completed activity.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        "201":
+          description: Review added successfully.
+        "400":
+          description: Invalid input data.
+        "403":
+          description: Forbidden - only customers who booked the activity can leave a review.
+    get:
+      summary: Get all reviews for a listing
+      description: Retrieves all customer reviews for a specific activity listing.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the listing for which reviews are being fetched.
+      responses:
+        "200":
+          description: List of reviews retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        "400":
+          description: Invalid request or listing ID format.
+        "404":
+          description: Listing not found or no reviews available.
+
+  /listings/{listingId}/sales:
+    get:
+      summary: Get sales statistics for a listing
+      description: Allows a seller to track sales and popularity of their activity.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sales statistics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_sales:
+                    type: integer
+                  revenue:
+                    type: number
+                    format: float
+                  average_rating:
+                    type: number
+                    format: float
+        "403":
+          description: Forbidden - only the listing owner can view sales data.
+        "404":
+          description: Listing not found.
+  /listings/{listingId}/cancel-policy:
+    put:
+      summary: Set custom cancellation policy
+      description: Allows a seller to define the refund and cancellation rules for an activity.
+      tags:
+        - listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policy:
+                  type: string
+      responses:
+        "200":
+          description: Cancellation policy updated successfully.
+        "403":
+          description: Forbidden - only the listing owner can modify this policy.
+  /listings/search:
+    get:
+      summary: Search activity listings
+      description: Search for listings using keywords and filters such as category, location, and rating.
+      tags:
+        - listing
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search keyword.
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category.
+        - name: location
+          in: query
+          schema:
+            type: string
+          description: Filter by location.
+        - name: minRating
+          in: query
+          schema:
+            type: number
+            format: float
+          description: Minimum rating to filter listings.
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            format: float
+          description: Maximum price to filter listings.
+      responses:
+        "200":
+          description: A list of filtered activity listings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+        "400":
+          description: Invalid query parameters.
+  /listings/categories/{categoryId}:
+    get:
+      summary: Get listings by category
+      description: Retrieve all activity listings that belong to a specific category.
+      tags:
+        - listing
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the category.
+      responses:
+        "200":
+          description: A list of listings in the specified category.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+        "404":
+          description: Category not found.
+
+  /businesses:
+    get:
+      summary: Get all businesses
+      description: Retrieve a list of all registered businesses.
+      tags:
+        - business
+      responses:
+        "200":
+          description: List of all businesses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+  /businesses/{businessId}/stats:
+    get:
+      summary: Get business sales statistics
+      description: Retrieve sales and listing popularity statistics for a specific business.
+      tags:
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the business.
+      responses:
+        "200":
+          description: Business statistics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessStats"
+        "401":
+          description: Unauthorized - User must be logged in.
+        "404":
+          description: Business not found.
+  /businesses/{businessId}:
+    get:
+      summary: Get business details
+      description: Retrieve details of a specific business.
+      tags:
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Business not found.
+
+    put:
+      summary: Update business information
+      description: Allows a seller to update their business details.
+      tags:
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Business"
+      responses:
+        "200":
+          description: Business updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "403":
+          description: Forbidden - only the business owner can update the details.
+        "404":
+          description: Business not found.
+
+    delete:
+      summary: Delete a business
+      description: Allows a seller to remove their business profile.
+      tags:
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Business deleted successfully.
+        "403":
+          description: Forbidden - only the business owner can delete it.
+        "404":
+          description: Business not found.
+  /businesses/{businessId}/listings:
+    get:
+      summary: Get all listings of a business
+      description: Retrieve a list of all activity listings under a specific business.
+      tags:
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of all listings for the business.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+        "404":
+          description: Business not found.
+  /businesses/register:
+    post:
+      summary: Register a new business
+      description: Allows a seller to register their business profile.
+      tags:
+        - business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Business"
+      responses:
+        "201":
+          description: Business registered successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Unauthorized - only sellers can register businesses.
+
+
+
+
+
+  /admin/users:
+    get:
+      summary: Get all users (Admin only)
+      description: Retrieve a list of all registered users.
+      tags:
+        - admin
+      responses:
+        "200":
+          description: List of users.
+        "403":
+          description: Forbidden.
+  /admin/users/{userId}/block:
+    post:
+      summary: Block a user
+      description: Blocks a user from accessing the platform.
+      tags:
+        - admin
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User blocked successfully.
+        "403":
+          description: Forbidden.
+  /admin/users/{userId}/delete:
+    delete:
+      summary: Delete a user (Admin only)
+      description: Deletes a user from the platform.
+      tags:
+        - admin
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: User deleted successfully.
+        "403":
+          description: Forbidden.
+  /admin/listings:
+    get:
+      summary: Get all listings (Admin only)
+      description: Retrieve a list of all activity listings for moderation.
+      tags:
+        - admin
+      responses:
+        "200":
+          description: List of all activity listings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+        "403":
+          description: Forbidden - only admins can access this.
+  /admin/listings/{listingId}/remove:
+    delete:
+      summary: Remove a listing (Admin only)
+      description: Allows an admin to remove inappropriate or violating listings.
+      tags:
+        - admin
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Listing removed successfully.
+        "403":
+          description: Forbidden - only admins can remove listings.
+        "404":
+          description: Listing not found.
+  /admin/businesses:
+    get:
+      summary: Get all businesses (Admin only)
+      description: Retrieve a list of all businesses for moderation.
+      tags:
+        - admin
+      responses:
+        "200":
+          description: List of all registered businesses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+        "403":
+          description: Forbidden - only admins can access this.
+  /admin/businesses/{businessId}/remove:
+    delete:
+      summary: Remove a business (Admin only)
+      description: Allows an admin to remove a business profile for policy violations.
+      tags:
+        - admin
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Business removed successfully.
+        "403":
+          description: Forbidden - only admins can remove businesses.
+        "404":
+          description: Business not found.
+
+  /bookings:
+    post:
+      summary: Create a new booking
+      description: Allows a customer to book an activity listing.
+      tags:
+        - bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingId:
+                  type: string
+                  description: The ID of the listing being booked.
+                date:
+                  type: string
+                  format: date
+                  description: The date of the booked activity.
+                participants:
+                  type: integer
+                  description: The number of participants.
+      responses:
+        "201":
+          description: Booking created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Invalid booking details.
+        "401":
+          description: Unauthorized - User must be logged in.
+        "404":
+          description: Listing not found.
+
+  /bookings/get/{userId}:
+    get:
+      summary: Get user booking history
+      description: Retrieve a list of past and active bookings for the authenticated user.
+      tags:
+        - bookings
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the user.
+      responses:
+        "200":
+          description: List of bookings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+        "401":
+          description: Unauthorized - User must be logged in.
+
+
+  /bookings/{bookingId}:
+    get:
+      summary: Get booking details
+      description: Retrieve detailed information about a specific booking.
+      tags:
+        - bookings
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the booking.
+      responses:
+        "200":
+          description: Booking details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          description: Unauthorized - User must be logged in.
+        "404":
+          description: Booking not found.
+  /bookings/{bookingId}/cancel:
+    post:
+      summary: Cancel booking
+      description: Allows a customer to cancel a booking according to the seller’s refund policy.
+      tags:
+        - bookings
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the booking to cancel.
+      responses:
+        "200":
+          description: Booking canceled successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refundAmount:
+                    type: number
+                    format: float
+                    description: The amount refunded (if applicable).
+        "400":
+          description: Booking cannot be canceled due to refund policy restrictions.
+        "401":
+          description: Unauthorized - User must be logged in.
+        "404":
+          description: Booking not found.
+
+  /payments:
+    post:
+      summary: Make a payment for a booking
+      description: Process a payment for a specific booking.
+      tags:
+        - payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingId:
+                  type: string
+                  description: The ID of the booking being paid for.
+                paymentMethod:
+                  type: string
+                  enum: [credit_card, paypal, stripe, bank_transfer]
+                  description: The payment method used.
+                cardDetails:
+                  type: object
+                  nullable: true
+                  properties:
+                    cardNumber:
+                      type: string
+                      description: Card number (only required for credit card payments).
+                    expiryDate:
+                      type: string
+                      format: date
+                      description: Expiry date of the card.
+                    cvv:
+                      type: string
+                      description: Security code.
+      responses:
+        "200":
+          description: Payment processed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "400":
+          description: Invalid payment details or insufficient funds.
+        "401":
+          description: Unauthorized - User must be logged in.
+        "404":
+          description: Booking not found.
+        "409":
+          description: Payment already completed for this booking.
+
+components:
+  schemas:
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the review.
+        listingId:
+          type: string
+          description: The ID of the listing being reviewed.
+        userId:
+          type: string
+          description: The ID of the user who left the review.
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+          description: Star rating given by the user.
+        comment:
+          type: string
+          description: The text content of the review.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the review was submitted.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the review was last updated.
+    BusinessStats:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+          description: Total number of bookings made.
+        totalRevenue:
+          type: number
+          format: float
+          description: Total revenue generated.
+        mostPopularListing:
+          type: string
+          description: The most booked listing ID.
+        averageRating:
+          type: number
+          format: float
+          description: Average rating of all listings.
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payment.
+        bookingId:
+          type: string
+          description: The ID of the booking the payment is associated with.
+        userId:
+          type: string
+          description: The ID of the user who made the payment.
+        amount:
+          type: number
+          format: float
+          description: The total amount paid.
+        paymentMethod:
+          type: string
+          enum: [credit_card, paypal, stripe, bank_transfer]
+          description: The method used for the payment.
+        status:
+          type: string
+          enum: [pending, completed, failed, refunded]
+          description: The status of the payment.
+        transactionId:
+          type: string
+          description: The transaction ID from the payment provider.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the payment was made.
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the booking.
+        userId:
+          type: string
+          description: The ID of the user who made the booking.
+        listingId:
+          type: string
+          description: The ID of the listing being booked.
+        date:
+          type: string
+          format: date
+          description: The date of the booked activity.
+        participants:
+          type: integer
+          description: The number of participants for the booking.
+        status:
+          type: string
+          enum: [pending, confirmed, canceled, completed]
+          description: The current status of the booking.
+        totalPrice:
+          type: number
+          format: float
+          description: The total price for the booking.
+        paymentStatus:
+          type: string
+          enum: [pending, paid, refunded]
+          description: The payment status for the booking.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the booking was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update to the booking.
+    Business:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the business.
+        name:
+          type: string
+          description: Official name of the business.
+        description:
+          type: string
+          description: Brief description of the business.
+        ownerId:
+          type: string
+          description: ID of the seller who owns this business.
+        address:
+          type: string
+          description: Physical or operational address of the business.
+        contact:
+          type: object
+          properties:
+            email:
+              type: string
+            phone:
+              type: string
+        website:
+          type: string
+          description: Business website URL.
+        socialLinks:
+          type: array
+          items:
+            type: string
+          description: List of social media links.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the listing.
+        title:
+          type: string
+          description: Name of the activity.
+        description:
+          type: string
+          description: Detailed description of the activity.
+        category:
+          type: string
+          description: Category of the activity (e.g., adventure, wellness, food).
+        location:
+          type: string
+          description: Address or general location of the activity.
+        price:
+          type: number
+          format: float
+          description: Price per person or per booking.
+        availability:
+          type: array
+          items:
+            type: string
+          description: List of available dates and times.
+        images:
+          type: array
+          items:
+            type: string
+          description: URLs of images showcasing the activity.
+        rating:
+          type: number
+          format: float
+          description: Average rating based on customer reviews.
+        sellerId:
+          type: string
+          description: ID of the seller who owns this listing.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        uid:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+      xml:
+        name: user
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    LoginResponse:
+      type: object
+      properties:
+        uid:
+          type: number
+          example: 1
+        token:
+          type: string
+          example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            "write:pets": modify pets in your account
+            "read:pets": read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+
+
+
+
+
