@@ -1,6 +1,10 @@
 package org.dreamsellers.model;
 
 
+import java.time.LocalDateTime;
+
+import org.dreamsellers.types.PaymentStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +21,18 @@ class BookingEntity {
   private long id;
 
   @ManyToOne
-  @JoinColumn(name = "")
-  
-}
+  @JoinColumn(name = "user_id", nullable = false)
+  private UserEntity user;
+
+  @OneToOne
+  @JoinColumn(name = "listing_id", referencedColumnName = "listing_id")
+  private ListingEntity listing;
+
+  @Basic
+  @Column(name = "date")
+  private LocalDateTime date;
+ 
+  @Enumerated(EnumType.STRING)
+  @Column(name = "payment_status")
+  private PaymentStatus paymentStatus;
+  }

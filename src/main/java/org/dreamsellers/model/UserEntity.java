@@ -31,4 +31,15 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<BookingEntity> bookings = new ArrayList<>();
+
+    @Basic
+    @Column(name = "email")
+    private String email;
+
+    @Basic
+    @Column(name = "phone")
+    private String phone;
+
+    @OneToMany(mappedBy = "user")
+    private List<ReviewEntity> reviews = new ArrayList<>();
 }

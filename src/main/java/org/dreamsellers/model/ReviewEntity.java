@@ -26,5 +26,9 @@ class ReviewEntity {
   @ManyToOne
   @JoinColumn(name = "listing_id", nullable = false)
   private ListingEntity listing;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private UserEntity user;
 }
 
