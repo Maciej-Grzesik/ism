@@ -49,19 +49,12 @@ paths:
       summary: Login user into the system.
       description: Endpoint for handling logging in.
       operationId: userLogin
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+        required: true
       responses:
         '200':
           description: successful operation
@@ -79,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: '#/components/schemas/AuthenticatedUserDto'
         '400':
           description: Invalid username/password supplied
           content:
@@ -137,19 +130,15 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/RegisterDto'
+        required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/AuthenticatedUserDto'
         "409":
           description: Conflict - email or username already exists
           content:
@@ -1386,6 +1375,53 @@ components:
         token:
           type: string
           example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+    AuthenticatedUserDto:
+      type: object
+      properties:
+        uid:
+          type: integer
+          example: 1
+        token:
+          type: string
+          example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+    RegisterDto:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "username"
+        password:
+          type: string
+          example: "123"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          example: "johndoe@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        role:
+          type: string
+          enum:
+            - ROLE_USER
+            - ROLE_ADMIN
+            - ROLE_BUSINESS
+          example: "ROLE_USER"
+    LoginDto:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "username"
+        password:
+          type: string
+          example: "password"
+
   securitySchemes:
     petstore_auth:
       type: oauth2

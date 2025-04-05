@@ -19,12 +19,12 @@ public class UserEntity {
     private long id;
 
     @Basic
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    @Column(name = "first_name", nullable = false, unique = true)
+    private String firstName;
 
     @Basic
-    @Column(name = "surname", nullable = false)
-    private String surname;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @OneToOne(mappedBy = "user")
     private AuthEntity auth;

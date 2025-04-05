@@ -3,7 +3,7 @@ package org.dreamsellers.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dreamsellers.types.Role;
+import org.model.RegisterDto;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,8 +19,8 @@ public class AuthEntity {
     private long id;
 
     @Basic
-    @Column(name = "login", nullable = false, unique = true)
-    private String login;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Basic
     @Column(name = "password", nullable = false)
@@ -28,7 +28,7 @@ public class AuthEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private RegisterDto.RoleEnum role;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
