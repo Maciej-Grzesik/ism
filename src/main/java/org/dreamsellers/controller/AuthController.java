@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 public class AuthController implements AuthApi {
 
-    @Autowired
     private AuthService authService;
 
 
