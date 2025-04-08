@@ -14,7 +14,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "booking")
-class BookingEntity {
+public class BookingEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "booking_id")

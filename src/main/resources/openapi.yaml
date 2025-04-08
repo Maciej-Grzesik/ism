@@ -965,29 +965,17 @@ paths:
       tags:
         - bookings
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                listingId:
-                  type: string
-                  description: The ID of the listing being booked.
-                date:
-                  type: string
-                  format: date
-                  description: The date of the booked activity.
-                participants:
-                  type: integer
-                  description: The number of participants.
+              $ref: '#/components/schemas/CreateBookingDto'
       responses:
         "201":
           description: Booking created successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Booking"
+                $ref: "#/components/schemas/BookingResponseDto"
         "400":
           description: Invalid booking details.
         "401":
@@ -1421,6 +1409,67 @@ components:
         password:
           type: string
           example: "password"
+    CreateBookingDto:
+      type: object
+      properties:
+        uid:
+          type: integer
+          example: 1
+        listingId:
+          type: integer
+          example: 1
+        date:
+          type: string
+          format: date-time
+        participants:
+          type: integer
+          example: 10
+    BookingResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "string"
+        userId:
+          type: string
+          example: "string"
+        listingId:
+          type: string
+          example: "string"
+        date:
+          type: string
+          format: date
+          example: "2025-04-07"
+        participants:
+          type: integer
+          example: 1073741824
+        status:
+          type: string
+          enum:
+            - pending
+            - confirmed
+            - cancelled
+          example: "pending"
+        totalPrice:
+          type: number
+          format: float
+          example: 0.1
+        paymentStatus:
+          type: string
+          enum:
+            - pending
+            - paid
+            - failed
+          example: "pending"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-04-07T19:19:18.827Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-04-07T19:19:18.827Z"
+
 
   securitySchemes:
     petstore_auth:
