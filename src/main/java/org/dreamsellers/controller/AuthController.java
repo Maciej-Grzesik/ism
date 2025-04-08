@@ -3,9 +3,7 @@ package org.dreamsellers.controller;
 import lombok.AllArgsConstructor;
 import org.api.AuthApi;
 import org.dreamsellers.service.AuthService;
-import org.model.AuthenticatedUserDto;
-import org.model.LoginDto;
-import org.model.RegisterDto;
+import org.model.*;
 import org.model.AuthenticatedUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 public class AuthController implements AuthApi {
-
     private AuthService authService;
-
 
     @Override
     public ResponseEntity<AuthenticatedUserDto> userRegister(RegisterDto registerDto) {
@@ -32,4 +28,27 @@ public class AuthController implements AuthApi {
 
         return new ResponseEntity<>(authenticatedUserDto, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Void> authResetPasswordPost(AuthResetPasswordPostRequest authResetPasswordPostRequest) {
+        // reset password logic here
+
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+
+        @Override
+    public ResponseEntity<Void> logoutUser() {
+        // invalidate token logic in auth service
+
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResponseEntity<Void> authRequestPasswordResetPost(AuthRequestPasswordResetPostRequest authRequestPasswordResetPostRequest) {
+        // send email logic here
+
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }
