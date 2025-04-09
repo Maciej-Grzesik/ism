@@ -24,4 +24,10 @@ public class BookingsService {
                 .collect(Collectors.toList());
     }
 
+    public BookingResponseDto getBookingByBookingId(long bookingId) {
+        Optional<BookingEntity> booking = bookingsRepository.findById(bookingId);
+
+        if (booking)
+    }
+
 }

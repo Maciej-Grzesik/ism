@@ -983,7 +983,7 @@ paths:
         "404":
           description: Listing not found.
 
-  /bookings/get/{userId}:
+  /bookings/{userId}:
     get:
       summary: Get user booking history
       description: Retrieve a list of past and active bookings for the authenticated user.
@@ -994,7 +994,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
           description: The ID of the user.
       responses:
         "200":
@@ -1004,7 +1004,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Booking"
+                  $ref: "#/components/schemas/BookingResponseDto"
         "401":
           description: Unauthorized - User must be logged in.
 
@@ -1020,7 +1020,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
           description: The ID of the booking.
       responses:
         "200":
@@ -1028,7 +1028,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Booking"
+                $ref: "#/components/schemas/BookingResponseDto"
         "401":
           description: Unauthorized - User must be logged in.
         "404":
