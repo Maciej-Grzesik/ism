@@ -267,10 +267,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserDto'
         '400':
           description: Invalid username supplied
         '404':
@@ -299,13 +296,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserDto'
       responses:
         '200':
           description: successful operation
@@ -368,6 +359,7 @@ paths:
         "401":
           description: Unauthorized.
 
+
   /listings/get_all:
     get:
       summary: Get all activity listings
@@ -404,7 +396,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Listing"
+                  $ref: "#/components/schemas/ListingDto"
   /listings/create:
     post:
       summary: Create a new activity listing
@@ -416,14 +408,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Listing"
+              $ref: "#/components/schemas/ListingDto"
       responses:
         "201":
           description: Listing created successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Listing"
+                $ref: "#/components/schemas/ListingResponseDto"
         "401":
           description: Unauthorized - only sellers can create listings.
   /listings/{listingId}:
@@ -437,14 +429,15 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: Listing details.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Listing"
+                $ref: "#/components/schemas/ListingDto"
         "404":
           description: Listing not found.
 
@@ -458,20 +451,21 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Listing"
+              $ref: "#/components/schemas/ListingDto"
       responses:
         "200":
           description: Listing updated successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Listing"
+                $ref: "#/components/schemas/ListingResponseDto"
         "403":
           description: Forbidden - only the listing owner can update it.
         "404":
@@ -487,7 +481,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "204":
           description: Listing deleted successfully.
@@ -506,7 +501,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -537,7 +533,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
           description: The ID of the listing for which reviews are being fetched.
       responses:
         "200":
@@ -547,7 +544,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Review"
+                  $ref: "#/components/schemas/ReviewDto"
         "400":
           description: Invalid request or listing ID format.
         "404":
@@ -564,7 +561,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: Sales statistics retrieved successfully.
@@ -596,7 +594,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -611,75 +610,75 @@ paths:
           description: Cancellation policy updated successfully.
         "403":
           description: Forbidden - only the listing owner can modify this policy.
-  /listings/search:
-    get:
-      summary: Search activity listings
-      description: Search for listings using keywords and filters such as category, location, and rating.
-      tags:
-        - listing
-      parameters:
-        - name: query
-          in: query
-          schema:
-            type: string
-          description: Search keyword.
-        - name: category
-          in: query
-          schema:
-            type: string
-          description: Filter by category.
-        - name: location
-          in: query
-          schema:
-            type: string
-          description: Filter by location.
-        - name: minRating
-          in: query
-          schema:
-            type: number
-            format: float
-          description: Minimum rating to filter listings.
-        - name: maxPrice
-          in: query
-          schema:
-            type: number
-            format: float
-          description: Maximum price to filter listings.
-      responses:
-        "200":
-          description: A list of filtered activity listings.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Listing"
-        "400":
-          description: Invalid query parameters.
-  /listings/categories/{categoryId}:
-    get:
-      summary: Get listings by category
-      description: Retrieve all activity listings that belong to a specific category.
-      tags:
-        - listing
-      parameters:
-        - name: categoryId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The ID of the category.
-      responses:
-        "200":
-          description: A list of listings in the specified category.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Listing"
-        "404":
-          description: Category not found.
+#  /listings/search:
+#    get:
+#      summary: Search activity listings
+#      description: Search for listings using keywords and filters such as category, location, and rating.
+#      tags:
+#        - listing
+#      parameters:
+#        - name: query
+#          in: query
+#          schema:
+#            type: string
+#          description: Search keyword.
+#        - name: category
+#          in: query
+#          schema:
+#            type: string
+#          description: Filter by category.
+#        - name: location
+#          in: query
+#          schema:
+#            type: string
+#          description: Filter by location.
+#        - name: minRating
+#          in: query
+#          schema:
+#            type: number
+#            format: float
+#          description: Minimum rating to filter listings.
+#        - name: maxPrice
+#          in: query
+#          schema:
+#            type: number
+#            format: float
+#          description: Maximum price to filter listings.
+#      responses:
+#        "200":
+#          description: A list of filtered activity listings.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/ListingDto"
+#        "400":
+#          description: Invalid query parameters.
+#  /listings/categories/{categoryId}:
+#    get:
+#      summary: Get listings by category
+#      description: Retrieve all activity listings that belong to a specific category.
+#      tags:
+#        - listing
+#      parameters:
+#        - name: categoryId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#          description: The ID of the category.
+#      responses:
+#        "200":
+#          description: A list of listings in the specified category.
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/ListingDto"
+#        "404":
+#          description: Category not found.
 
   /businesses:
     get:
@@ -695,7 +694,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Business"
+                  $ref: "#/components/schemas/BusinessDto"
   /businesses/{businessId}/stats:
     get:
       summary: Get business sales statistics
@@ -715,7 +714,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BusinessStats"
+                $ref: "#/components/schemas/BusinessStatsDto"
         "401":
           description: Unauthorized - User must be logged in.
         "404":
@@ -731,14 +730,15 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: Business details.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Business"
+                $ref: "#/components/schemas/BusinessDto"
         "404":
           description: Business not found.
 
@@ -752,20 +752,21 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Business"
+              $ref: "#/components/schemas/BusinessDto"
       responses:
         "200":
           description: Business updated successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Business"
+                $ref: "#/components/schemas/BusinessDto"
         "403":
           description: Forbidden - only the business owner can update the details.
         "404":
@@ -781,7 +782,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "204":
           description: Business deleted successfully.
@@ -800,7 +802,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: List of all listings for the business.
@@ -809,9 +812,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Listing"
+                  $ref: "#/components/schemas/ListingDto"
         "404":
           description: Business not found.
+
   /businesses/register:
     post:
       summary: Register a new business
@@ -823,22 +827,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Business"
+              $ref: "#/components/schemas/BusinessDto"
       responses:
         "201":
           description: Business registered successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Business"
+                $ref: "#/components/schemas/BusinessDto"
         "400":
           description: Invalid input data.
         "401":
           description: Unauthorized - only sellers can register businesses.
-
-
-
-
 
   /admin/users:
     get:
@@ -862,7 +862,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "200":
           description: User blocked successfully.
@@ -879,7 +880,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "204":
           description: User deleted successfully.
@@ -899,7 +901,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Listing"
+                  $ref: "#/components/schemas/ListingDto"
         "403":
           description: Forbidden - only admins can access this.
   /admin/listings/{listingId}/remove:
@@ -913,7 +915,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "204":
           description: Listing removed successfully.
@@ -935,7 +938,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Business"
+                  $ref: "#/components/schemas/BusinessDto"
         "403":
           description: Forbidden - only admins can access this.
   /admin/businesses/{businessId}/remove:
@@ -949,7 +952,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         "204":
           description: Business removed successfully.
@@ -958,7 +962,7 @@ paths:
         "404":
           description: Business not found.
 
-  /bookings:
+  /bookings/create:
     post:
       summary: Create a new booking
       description: Allows a customer to book an activity listing.
@@ -982,7 +986,6 @@ paths:
           description: Unauthorized - User must be logged in.
         "404":
           description: Listing not found.
-
   /bookings/{userId}:
     get:
       summary: Get user booking history
@@ -995,6 +998,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
           description: The ID of the user.
       responses:
         "200":
@@ -1007,9 +1011,7 @@ paths:
                   $ref: "#/components/schemas/BookingResponseDto"
         "401":
           description: Unauthorized - User must be logged in.
-
-
-  /bookings/{bookingId}:
+  /bookings/booking/{bookingId}:
     get:
       summary: Get booking details
       description: Retrieve detailed information about a specific booking.
@@ -1021,6 +1023,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
           description: The ID of the booking.
       responses:
         "200":
@@ -1044,7 +1047,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
           description: The ID of the booking to cancel.
       responses:
         "200":
@@ -1052,12 +1056,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  refundAmount:
-                    type: number
-                    format: float
-                    description: The amount refunded (if applicable).
+                $ref: "#/components/schemas/BookingResponseDto"
+
         "400":
           description: Booking cannot be canceled due to refund policy restrictions.
         "401":
@@ -1072,40 +1072,17 @@ paths:
       tags:
         - payments
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                bookingId:
-                  type: string
-                  description: The ID of the booking being paid for.
-                paymentMethod:
-                  type: string
-                  enum: [credit_card, paypal, stripe, bank_transfer]
-                  description: The payment method used.
-                cardDetails:
-                  type: object
-                  nullable: true
-                  properties:
-                    cardNumber:
-                      type: string
-                      description: Card number (only required for credit card payments).
-                    expiryDate:
-                      type: string
-                      format: date
-                      description: Expiry date of the card.
-                    cvv:
-                      type: string
-                      description: Security code.
+              $ref: '#/components/schemas/PaymentDto'
       responses:
         "200":
           description: Payment processed successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Payment"
+                $ref: "#/components/schemas/PaymentResponseDto"
         "400":
           description: Invalid payment details or insufficient funds.
         "401":
@@ -1117,17 +1094,20 @@ paths:
 
 components:
   schemas:
-    Review:
+    ReviewDto:
       type: object
       properties:
         id:
-          type: string
+          type: integer
+          format: int64
           description: Unique identifier for the review.
         listingId:
-          type: string
+          type: integer
+          format: int64
           description: The ID of the listing being reviewed.
         userId:
-          type: string
+          type: integer
+          format: int64
           description: The ID of the user who left the review.
         rating:
           type: number
@@ -1146,7 +1126,7 @@ components:
           type: string
           format: date-time
           description: Timestamp when the review was last updated.
-    BusinessStats:
+    BusinessStatsDto:
       type: object
       properties:
         totalBookings:
@@ -1163,161 +1143,175 @@ components:
           type: number
           format: float
           description: Average rating of all listings.
-    Payment:
+
+    PaymentDto:
       type: object
       properties:
-        id:
-          type: string
-          description: Unique identifier for the payment.
         bookingId:
-          type: string
+          type: integer
+          format: int64
           description: The ID of the booking the payment is associated with.
         userId:
-          type: string
-          description: The ID of the user who made the payment.
-        amount:
-          type: number
-          format: float
-          description: The total amount paid.
-        paymentMethod:
-          type: string
-          enum: [credit_card, paypal, stripe, bank_transfer]
-          description: The method used for the payment.
-        status:
-          type: string
-          enum: [pending, completed, failed, refunded]
-          description: The status of the payment.
-        transactionId:
-          type: string
-          description: The transaction ID from the payment provider.
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp of when the payment was made.
-    Booking:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the booking.
-        userId:
-          type: string
-          description: The ID of the user who made the booking.
-        listingId:
-          type: string
-          description: The ID of the listing being booked.
-        date:
-          type: string
-          format: date
-          description: The date of the booked activity.
-        participants:
           type: integer
-          description: The number of participants for the booking.
-        status:
-          type: string
-          enum: [pending, confirmed, canceled, completed]
-          description: The current status of the booking.
-        totalPrice:
-          type: number
-          format: float
-          description: The total price for the booking.
-        paymentStatus:
-          type: string
-          enum: [pending, paid, refunded]
-          description: The payment status for the booking.
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp of when the booking was created.
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp of the last update to the booking.
-    Business:
+          format: int64
+          description: The ID of the user who made the payment.
+    PaymentResponseDto:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          description: The ID of the booking the payment is associated with.
+
+#    Booking:
+#      type: object
+#      properties:
+#        id:
+#          type: string
+#          description: Unique identifier for the booking.
+#        userId:
+#          type: string
+#          description: The ID of the user who made the booking.
+#        listingId:
+#          type: string
+#          description: The ID of the listing being booked.
+#        date:
+#          type: string
+#          format: date
+#          description: The date of the booked activity.
+#        participants:
+#          type: integer
+#          description: The number of participants for the booking.
+#        status:
+#          type: string
+#          enum: [pending, confirmed, canceled, completed]
+#          description: The current status of the booking.
+#        totalPrice:
+#          type: number
+#          format: float
+#          description: The total price for the booking.
+#        paymentStatus:
+#          type: string
+#          enum: [pending, paid, refunded]
+#          description: The payment status for the booking.
+#        createdAt:
+#          type: string
+#          format: date-time
+#          description: Timestamp of when the booking was created.
+#        updatedAt:
+#          type: string
+#          format: date-time
+#          description: Timestamp of the last update to the booking.
+    BusinessDto:
       type: object
       properties:
         id:
-          type: string
+          type: integer
+          format: int64
           description: Unique identifier for the business.
+          example: 203
         name:
           type: string
           description: Official name of the business.
+          example: Adventure Slovenia
         description:
           type: string
           description: Brief description of the business.
-        ownerId:
-          type: string
+          example: Outdoor activity provider offering guided tours and experiences.
+        authId:
+          type: integer
+          format: int64
           description: ID of the seller who owns this business.
+          example: 1
         address:
           type: string
           description: Physical or operational address of the business.
-        contact:
-          type: object
-          properties:
-            email:
-              type: string
-            phone:
-              type: string
-        website:
-          type: string
-          description: Business website URL.
-        socialLinks:
-          type: array
-          items:
-            type: string
-          description: List of social media links.
+          example: Ljubljanska cesta 12, Bled, Slovenia
         createdAt:
           type: string
           format: date-time
+          example: 2025-03-25T09:00:00Z
         updatedAt:
           type: string
           format: date-time
-    Listing:
+          example: 2025-04-10T14:30:00Z
+
+    ListingDto:
       type: object
       properties:
         id:
-          type: string
+          type: integer
+          format: int64
           description: Unique identifier for the listing.
+          example: 101
         title:
           type: string
           description: Name of the activity.
+          example: "Sunset Kayaking Tour"
         description:
           type: string
           description: Detailed description of the activity.
+          example: "Enjoy a peaceful kayaking tour during golden hour with an experienced guide."
         category:
           type: string
           description: Category of the activity (e.g., adventure, wellness, food).
+          example: "adventure"
         location:
           type: string
           description: Address or general location of the activity.
+          example: "Lake Bled, Slovenia"
         price:
           type: number
           format: float
           description: Price per person or per booking.
+          example: 49.99
         availability:
           type: array
           items:
             type: string
           description: List of available dates and times.
+          example:
+            - "2025-04-15"
+            - "2025-04-16"
+            - "2025-04-17"
         images:
           type: array
           items:
             type: string
           description: URLs of images showcasing the activity.
+          example:
+            - "https://cdn.example.com/images/kayak1.jpg"
+            - "https://cdn.example.com/images/kayak2.jpg"
         rating:
           type: number
           format: float
           description: Average rating based on customer reviews.
-        sellerId:
-          type: string
+          example: 4.7
+        businessId:
+          type: integer
+          format: int64
           description: ID of the seller who owns this listing.
+          example: 1
         createdAt:
           type: string
           format: date-time
+          example: "2025-04-01T10:30:00Z"
         updatedAt:
           type: string
           format: date-time
-    User:
+          example: "2025-04-10T12:00:00Z"
+    ListingResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the listing.
+        title:
+          type: string
+          description: Name of the activity.
+
+    UserDto:
       type: object
       properties:
         uid:
@@ -1342,8 +1336,6 @@ components:
         phone:
           type: string
           example: '12345'
-      xml:
-        name: user
     Error:
       type: object
       properties:
@@ -1354,20 +1346,22 @@ components:
       required:
         - code
         - message
-    LoginResponse:
-      type: object
-      properties:
-        uid:
-          type: number
-          example: 1
-        token:
-          type: string
-          example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+#    LoginResponse:
+#      type: object
+#      properties:
+#        uid:
+#          type: number
+#          example: 1
+#        token:
+#          type: string
+#          example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+
     AuthenticatedUserDto:
       type: object
       properties:
         uid:
           type: integer
+          format: int64
           example: 1
         token:
           type: string
@@ -1408,41 +1402,42 @@ components:
           example: "username"
         password:
           type: string
-          example: "password"
+          example: "123"
+
+
     CreateBookingDto:
       type: object
       properties:
         uid:
           type: integer
+          format: int64
           example: 1
         listingId:
           type: integer
+          format: int64
           example: 1
         date:
           type: string
           format: date-time
-        participants:
-          type: integer
-          example: 10
     BookingResponseDto:
       type: object
       properties:
         id:
-          type: string
-          example: "string"
+          type: integer
+          format: int64
+          example: 1
         userId:
-          type: string
-          example: "string"
+          type: integer
+          format: int64
+          example: 1
         listingId:
-          type: string
-          example: "string"
+          type: integer
+          format: int64
+          example: 1
         date:
           type: string
           format: date
           example: "2025-04-07"
-        participants:
-          type: integer
-          example: 1073741824
         status:
           type: string
           enum:

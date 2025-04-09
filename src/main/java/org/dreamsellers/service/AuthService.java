@@ -45,7 +45,7 @@ public class AuthService {
 
         AuthEntity savedAuth = authRepository.save(auth);
         AuthenticatedUserDto authenticatedUserDto = new AuthenticatedUserDto();
-        authenticatedUserDto.setUid((int) savedAuth.getId());
+        authenticatedUserDto.setUid(savedAuth.getId());
         return authenticatedUserDto;
 
     }
@@ -56,7 +56,7 @@ public class AuthService {
         if (!auth.get().getPassword().equals(loginDto.getPassword())) throw new RuntimeException("Invalid password");
 
         AuthenticatedUserDto authenticatedUserDto = new AuthenticatedUserDto();
-        authenticatedUserDto.setUid((int) auth.get().getId());
+        authenticatedUserDto.setUid(auth.get().getId());
 
         return authenticatedUserDto;
     }
