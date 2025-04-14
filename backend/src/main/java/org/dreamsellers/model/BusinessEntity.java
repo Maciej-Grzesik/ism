@@ -1,5 +1,6 @@
 package org.dreamsellers.model;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "business")
-class BusinessEntity {
+public class BusinessEntity {
     
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +30,21 @@ class BusinessEntity {
   @Column(name = "description", nullable = false)
   private String description;
 
+  @OneToOne(mappedBy = "business")
+  private AuthEntity auth;
+
+
   @Basic
-  @Column(name = "adress", nullable = false)
-  private String adress;
+  @Column(name = "address", nullable = false)
+  private String address;
 
   @Basic
   @Column(name = "created_at", nullable = false)
-  private LocalDateTime createdAt;
+  private OffsetDateTime createdAt;
   
   @Basic
   @Column(name = "updated_at", nullable = false)
-  private LocalDateTime updatedAt;
+  private OffsetDateTime updatedAt;
 
   @OneToMany(mappedBy = "business")
   private List<ListingEntity> listings = new ArrayList<>();

@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "review")
-class ReviewEntity { 
+public class ReviewEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "review_id")

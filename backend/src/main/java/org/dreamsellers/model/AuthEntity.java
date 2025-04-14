@@ -33,4 +33,8 @@ public class AuthEntity {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity user;
+
+    @OneToOne
+    @JoinColumn(name = "business_id", referencedColumnName = "business_id")
+    private BusinessEntity business;
 }

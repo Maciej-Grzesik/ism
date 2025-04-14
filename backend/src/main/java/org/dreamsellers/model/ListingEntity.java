@@ -1,6 +1,7 @@
 package org.dreamsellers.model;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Locale.Category;
@@ -14,7 +15,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "listing")
-class ListingEntity {
+public class ListingEntity {
   
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,21 +33,35 @@ class ListingEntity {
   @Column(name = "title")
   private String title;
 
-  @Enumerated(EnumType.STRING)
+  @Basic
+  @Column(name = "description")
+  private String description;
+
+  @Basic
   @Column(name = "category")
-  private Category category;
+  private String category;
 
   @Basic
-  @Column(name = " price")
-  private Double price;
+  @Column(name="location")
+  private String location;
 
   @Basic
-  @Column(name = " availability", nullable = false)
-  private List<LocalDateTime> availability = new ArrayList<>();
+  @Column(name = "price")
+  private float price;
 
-  @Basic
+  @ElementCollection
+  @CollectionTable(name = "listing_availability", joinColumns = @JoinColumn(name = "listing_id"))
+  @Column(name = "available_date")
+  private List<LocalDate> availability = new ArrayList<>();
+
+  @ElementCollection
+  @CollectionTable(name = "images", joinColumns = @JoinColumn(name = "listing_id"))
   @Column(name = "image", nullable = false)
-  private String image;
+  private List<String> images = new ArrayList<>();
+
+  @Basic
+  @Column(name="rating")
+  private Float rating;
 
   @Basic
   @Column(name = "created_at")
@@ -55,6 +70,9 @@ class ListingEntity {
   @Basic
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+
+
 
 
 } 

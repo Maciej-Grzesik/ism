@@ -3,10 +3,9 @@ package org.dreamsellers.model;
 
 import java.time.LocalDateTime;
 
-import org.dreamsellers.types.PaymentStatus;
-
 import jakarta.persistence.*;
 import lombok.*;
+import org.model.BookingResponseDto;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +32,22 @@ public class BookingEntity {
   private LocalDateTime date;
  
   @Enumerated(EnumType.STRING)
+  @Column(name = "status")
+  private BookingResponseDto.StatusEnum status;
+
+  @Basic
+  @Column(name = "price")
+  private double totalPrice;
+
+  @Enumerated(EnumType.STRING)
   @Column(name = "payment_status")
-  private PaymentStatus paymentStatus;
-  }
+  private BookingResponseDto.PaymentStatusEnum paymentStatus;
+
+  @Basic
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
+
+  @Basic
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+}
