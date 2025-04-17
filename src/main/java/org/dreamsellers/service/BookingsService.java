@@ -1,7 +1,9 @@
 package org.dreamsellers.service;
 
 import lombok.AllArgsConstructor;
+import org.dreamsellers.error.UserNotFoundException;
 import org.dreamsellers.model.BookingEntity;
+import org.dreamsellers.model.UserEntity;
 import org.dreamsellers.repository.BookingsRepository;
 import org.dreamsellers.repository.ListingRepository;
 import org.dreamsellers.repository.UserRepository;
@@ -25,6 +27,8 @@ public class BookingsService {
     private final ListingRepository listingRepository;
 
     public List<BookingResponseDto> getAllBookingsByUser(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
+
         return bookingsRepository.getAllByUserId(userId)
                 .stream()
                 .map(bookingEntity -> modelMapper.map(bookingEntity, BookingResponseDto.class))

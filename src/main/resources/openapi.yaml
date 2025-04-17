@@ -78,41 +78,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Wrong password or login, try again"
+                $ref: '#/components/schemas/InvalidCredentialsError'
         '401':
           description: Unauthorized, invalid username/password
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Wrong password or login, try again"
+                $ref: '#/components/schemas/UnauthorizedError'
         '429':
           description: Too many requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "To many requests, try again later"
+                $ref: '#/components/schemas/TooManyRequestsError'
         '500':
           description: Internal server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Error processing the request"
+                $ref: '#/components/schemas/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -139,36 +123,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticatedUserDto'
-        "409":
+        '409':
           description: Conflict - email or username already exists
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "An account with this email already exists."
+                $ref: '#/components/schemas/ConflictError'
         '429':
           description: Too many requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "To many requests, try again later"
+                $ref: '#/components/schemas/TooManyRequestsError'
         '500':
           description: Internal server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Error processing the request"
+                $ref: '#/components/schemas/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -184,18 +156,14 @@ paths:
       operationId: logoutUser
       parameters: []
       responses:
+        '200':
+          description: successful operation
         '500':
           description: Internal server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Error processing the request"
-        '200':
-          description: successful operation
+                $ref: '#/components/schemas/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -220,10 +188,24 @@ paths:
       responses:
         "200":
           description: Password reset email sent.
-        "400":
+        '400':
           description: Invalid email.
-        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidEmailError'
+        '404':
           description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotFoundError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /auth/reset-password:
     post:
       summary: Reset password
@@ -244,8 +226,18 @@ paths:
       responses:
         "200":
           description: Password reset successfully.
-        "400":
+        '400':
           description: Invalid token or password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidTokenOrPasswordError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /user/{id}:
     get:
@@ -270,8 +262,22 @@ paths:
                 $ref: '#/components/schemas/UserDto'
         '400':
           description: Invalid username supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidIdError'
+        '401':
+          description: Unauthorized, user does not have permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
         '404':
-          description: User not found
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotFoundError'
         default:
           description: Unexpected error
           content:
@@ -300,10 +306,28 @@ paths:
       responses:
         '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
         '400':
-          description: bad request
+          description: Invalid username supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidIdError'
+        '401':
+          description: Unauthorized, user does not have permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
         '404':
-          description: user not found
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotFoundError'
         default:
           description: Unexpected error
           content:
@@ -326,10 +350,28 @@ paths:
       responses:
         '200':
           description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
         '400':
-          description: Invalid id supplied
+          description: Invalid username supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidIdError'
+        '401':
+          description: Unauthorized, user does not have permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
         '404':
-          description: User not found
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotFoundError'
         default:
           description: Unexpected error
           content:
@@ -345,8 +387,12 @@ paths:
       responses:
         "200":
           description: List of notifications.
-        "401":
-          description: Unauthorized.
+        '401':
+          description: Unauthorized, user does not have permission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
 
     put:
       summary: Mark notifications as read
@@ -397,6 +443,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ListingDto"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /listings/create:
     post:
       summary: Create a new activity listing
@@ -416,8 +468,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListingResponseDto"
-        "401":
-          description: Unauthorized - only sellers can create listings.
+        '401':
+          description: Unauthorized, user does not have permission to this resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
   /listings/{listingId}:
     get:
       summary: Get listing details
@@ -432,14 +488,24 @@ paths:
             type: integer
             format: int64
       responses:
-        "200":
+        '200':
           description: Listing details.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListingDto"
-        "404":
+        '404':
           description: Listing not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
     put:
       summary: Update listing
@@ -517,12 +583,30 @@ paths:
                 comment:
                   type: string
       responses:
-        "201":
+        '201':
           description: Review added successfully.
-        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewDto'
+        '400':
           description: Invalid input data.
-        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
           description: Forbidden - only customers who booked the activity can leave a review.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     get:
       summary: Get all reviews for a listing
       description: Retrieves all customer reviews for a specific activity listing.
@@ -549,7 +633,6 @@ paths:
           description: Invalid request or listing ID format.
         "404":
           description: Listing not found or no reviews available.
-
   /listings/{listingId}/sales:
     get:
       summary: Get sales statistics for a listing
@@ -564,25 +647,30 @@ paths:
             type: integer
             format: int64
       responses:
-        "200":
+        '200':
           description: Sales statistics retrieved successfully.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total_sales:
-                    type: integer
-                  revenue:
-                    type: number
-                    format: float
-                  average_rating:
-                    type: number
-                    format: float
-        "403":
+                $ref: "#/components/schemas/ListingSalesDto"
+        '403':
           description: Forbidden - only the listing owner can view sales data.
-        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        '404':
           description: Listing not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /listings/{listingId}/cancel-policy:
     put:
       summary: Set custom cancellation policy
@@ -606,79 +694,21 @@ paths:
                 policy:
                   type: string
       responses:
-        "200":
+        '200':
           description: Cancellation policy updated successfully.
-        "403":
+        '403':
           description: Forbidden - only the listing owner can modify this policy.
-#  /listings/search:
-#    get:
-#      summary: Search activity listings
-#      description: Search for listings using keywords and filters such as category, location, and rating.
-#      tags:
-#        - listing
-#      parameters:
-#        - name: query
-#          in: query
-#          schema:
-#            type: string
-#          description: Search keyword.
-#        - name: category
-#          in: query
-#          schema:
-#            type: string
-#          description: Filter by category.
-#        - name: location
-#          in: query
-#          schema:
-#            type: string
-#          description: Filter by location.
-#        - name: minRating
-#          in: query
-#          schema:
-#            type: number
-#            format: float
-#          description: Minimum rating to filter listings.
-#        - name: maxPrice
-#          in: query
-#          schema:
-#            type: number
-#            format: float
-#          description: Maximum price to filter listings.
-#      responses:
-#        "200":
-#          description: A list of filtered activity listings.
-#          content:
-#            application/json:
-#              schema:
-#                type: array
-#                items:
-#                  $ref: "#/components/schemas/ListingDto"
-#        "400":
-#          description: Invalid query parameters.
-#  /listings/categories/{categoryId}:
-#    get:
-#      summary: Get listings by category
-#      description: Retrieve all activity listings that belong to a specific category.
-#      tags:
-#        - listing
-#      parameters:
-#        - name: categoryId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#          description: The ID of the category.
-#      responses:
-#        "200":
-#          description: A list of listings in the specified category.
-#          content:
-#            application/json:
-#              schema:
-#                type: array
-#                items:
-#                  $ref: "#/components/schemas/ListingDto"
-#        "404":
-#          description: Category not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
   /businesses:
     get:
@@ -695,6 +725,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BusinessDto"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /businesses/{businessId}/stats:
     get:
       summary: Get business sales statistics
@@ -715,10 +751,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessStatsDto"
-        "401":
+        '401':
           description: Unauthorized - User must be logged in.
-        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        '404':
           description: Business not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /businesses/{businessId}:
     get:
       summary: Get business details
@@ -739,8 +789,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessDto"
-        "404":
+        '401':
+          description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        '404':
           description: Business not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
     put:
       summary: Update business information
@@ -813,9 +879,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ListingDto"
-        "404":
+        '401':
+          description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        '404':
           description: Business not found.
-
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /businesses/register:
     post:
       summary: Register a new business
@@ -829,16 +910,24 @@ paths:
             schema:
               $ref: "#/components/schemas/BusinessDto"
       responses:
-        "201":
+        '201':
           description: Business registered successfully.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessDto"
-        "400":
+        '400':
           description: Invalid input data.
-        "401":
-          description: Unauthorized - only sellers can register businesses.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /admin/users:
     get:
@@ -974,18 +1063,36 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateBookingDto'
       responses:
-        "201":
+        '201':
           description: Booking created successfully.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BookingResponseDto"
-        "400":
+        '400':
           description: Invalid booking details.
-        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
           description: Unauthorized - User must be logged in.
-        "404":
-          description: Listing not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        '403':
+          description: Forbidden - Only a Users can create bookings.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /bookings/{userId}:
     get:
       summary: Get user booking history
@@ -1011,6 +1118,22 @@ paths:
                   $ref: "#/components/schemas/BookingResponseDto"
         "401":
           description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /bookings/booking/{bookingId}:
     get:
       summary: Get booking details
@@ -1034,8 +1157,22 @@ paths:
                 $ref: "#/components/schemas/BookingResponseDto"
         "401":
           description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
         "404":
           description: Booking not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /bookings/{bookingId}/cancel:
     post:
       summary: Cancel booking
@@ -1057,13 +1194,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BookingResponseDto"
-
         "400":
           description: Booking cannot be canceled due to refund policy restrictions.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingCancelError"
         "401":
           description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
         "404":
           description: Booking not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingNotFoundError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /payments:
     post:
@@ -1085,12 +1239,34 @@ paths:
                 $ref: "#/components/schemas/PaymentResponseDto"
         "400":
           description: Invalid payment details or insufficient funds.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentError"
         "401":
           description: Unauthorized - User must be logged in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
         "404":
           description: Booking not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingNotFoundError"
         "409":
           description: Payment already completed for this booking.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentConflictError"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -1346,15 +1522,27 @@ components:
       required:
         - code
         - message
-#    LoginResponse:
-#      type: object
-#      properties:
-#        uid:
-#          type: number
-#          example: 1
-#        token:
-#          type: string
-#          example: "ASDFGDFHDFgscdcsdGJTRFGWVCSwz....."
+    ListingSalesDto:
+      type: object
+      properties:
+        listingId:
+          type: integer
+          format: int64
+        totalSales:
+          type: integer
+        totalRevenue:
+          type: number
+          format: float
+        averageRating:
+          type: number
+          format: float
+        totalReviews:
+          type: integer
+        soldUnits:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
 
     AuthenticatedUserDto:
       type: object
@@ -1464,6 +1652,202 @@ components:
           type: string
           format: date-time
           example: "2025-04-07T19:19:18.827Z"
+
+    InvalidCredentialsError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Wrong password or login, try again"
+        code:
+          type: string
+          example: "INVALID_CREDENTIALS"
+        status:
+          type: integer
+          example: 400
+
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unauthorized access, invalid credentials"
+        code:
+          type: string
+          example: "UNAUTHORIZED"
+        status:
+          type: integer
+          example: 401
+
+    TooManyRequestsError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Too many requests, please try again later"
+        code:
+          type: string
+          example: "TOO_MANY_REQUESTS"
+        status:
+          type: integer
+          example: 429
+
+    InternalServerError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error processing the request"
+        code:
+          type: string
+          example: "INTERNAL_SERVER_ERROR"
+        status:
+          type: integer
+          example: 500
+    ConflictError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An account with this email already exists."
+        code:
+          type: string
+          example: "CONFLICT"
+        status:
+          type: integer
+          example: 409
+    InvalidEmailError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid email address format."
+        code:
+          type: string
+          example: "INVALID_EMAIL"
+        status:
+          type: integer
+          example: 400
+    UserNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No user found with the given email address."
+        code:
+          type: string
+          example: "USER_NOT_FOUND"
+        status:
+          type: integer
+          example: 404
+    InvalidTokenOrPasswordError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid or expired token, or password doesn't meet requirements."
+        code:
+          type: string
+          example: "INVALID_TOKEN_OR_PASSWORD"
+        status:
+          type: integer
+          example: 400
+    InvalidIdError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid user ID format."
+        code:
+          type: string
+          example: "INVALID_ID"
+        status:
+          type: integer
+          example: 400
+    ListingNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No listing found with the given ID."
+        code:
+          type: string
+          example: "LISTING_NOT_FOUND"
+        status:
+          type: integer
+          example: 404
+    ForbiddenError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Only customers who booked this activity can leave a review."
+        code:
+          type: string
+          example: "FORBIDDEN"
+        status:
+          type: integer
+          example: 403
+    BusinessNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Business not found."
+        code:
+          type: string
+          example: "NOT_FOUND"
+        status:
+          type: integer
+          example: 404
+    BookingNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Booking not found."
+        code:
+          type: string
+          example: "BOOKING_NOT_FOUND"
+        status:
+          type: integer
+          example: 404
+    BookingCancelError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Booking cannot be canceled due to refund policy restrictions."
+        code:
+          type: string
+          example: "CANCELLATION_POLICY_VIOLATION"
+        status:
+          type: integer
+          example: 400
+    PaymentError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid payment details or insufficient funds."
+        code:
+          type: string
+          example: "PAYMENT_FAILED"
+        status:
+          type: integer
+          example: 400
+    PaymentConflictError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Payment already completed for this booking."
+        code:
+          type: string
+          example: "PAYMENT_ALREADY_COMPLETED"
+        status:
+          type: integer
+          example: 409
 
 
   securitySchemes:

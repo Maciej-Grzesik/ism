@@ -60,7 +60,7 @@ public class ListingController implements ListingApi {
     }
 
     @Override
-    public ResponseEntity<ListingsListingIdSalesGet200Response> listingsListingIdSalesGet(Long listingId) {
+    public ResponseEntity<ListingSalesDto> listingsListingIdSalesGet(Long listingId) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

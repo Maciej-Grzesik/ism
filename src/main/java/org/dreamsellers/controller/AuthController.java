@@ -2,6 +2,7 @@ package org.dreamsellers.controller;
 
 import lombok.AllArgsConstructor;
 import org.api.AuthApi;
+import org.dreamsellers.error.InvalidCredentialsException;
 import org.dreamsellers.service.AuthService;
 import org.model.*;
 import org.model.AuthenticatedUserDto;
@@ -23,9 +24,12 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<AuthenticatedUserDto> userLogin(LoginDto loginDto) {
-        AuthenticatedUserDto authenticatedUserDto = authService.login(loginDto);
-
-        return new ResponseEntity<>(authenticatedUserDto, HttpStatus.OK);
+        try {
+            AuthenticatedUserDto authenticatedUserDto = authService.login(loginDto);
+            return new ResponseEntity<>(authenticatedUserDto, HttpStatus.OK);
+        } catch (InvalidCredentialsException e) {
+            throw new InvalidCredentialsException(e.getMessage());
+        }
     }
 
     @Override

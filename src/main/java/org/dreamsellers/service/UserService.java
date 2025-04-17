@@ -1,6 +1,5 @@
 package org.dreamsellers.service;
 
-import org.dreamsellers.dto.UserDTO;
 import org.dreamsellers.model.UserEntity;
 import org.dreamsellers.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -15,9 +14,9 @@ public class UserService {
   private UserRepository userRepository;
   private ModelMapper modelMapper;
 
-  public UserDTO getUser(long id) {
-    UserEntity user = userRepository.getUserById(id);
-    return modelMapper.map(user, UserDTO.class);
-  }
+//  public UserDTO getUser(long id) {
+//    UserEntity user = userRepository.getUserById(id);
+//    return modelMapper.map(user, UserDTO.class);
+//  }
 
 }
