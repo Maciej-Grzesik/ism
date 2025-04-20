@@ -2,10 +2,10 @@ package org.dreamsellers.controller;
 
 import lombok.AllArgsConstructor;
 import org.api.AuthApi;
-import org.dreamsellers.error.InvalidCredentialsException;
 import org.dreamsellers.service.AuthService;
 import org.model.*;
 import org.model.AuthenticatedUserDto;
+import org.model.InvalidCredentialsError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +27,8 @@ public class AuthController implements AuthApi {
         try {
             AuthenticatedUserDto authenticatedUserDto = authService.login(loginDto);
             return new ResponseEntity<>(authenticatedUserDto, HttpStatus.OK);
-        } catch (InvalidCredentialsException e) {
-            throw new InvalidCredentialsException(e.getMessage());
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
     }
 

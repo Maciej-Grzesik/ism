@@ -1,8 +1,8 @@
 package org.dreamsellers.service;
 
 import lombok.AllArgsConstructor;
-//import org.dreamsellers.errors.UserAlreadyExistsException;
-import org.dreamsellers.error.InvalidCredentialsException;
+import org.dreamsellers.errors.UserAlreadyExistsException;
+import org.dreamsellers.errors.InvalidCredentialsException;
 import org.dreamsellers.model.AuthEntity;
 import org.dreamsellers.model.UserEntity;
 import org.dreamsellers.repository.AuthRepository;
@@ -55,11 +55,11 @@ public class AuthService {
         Optional<AuthEntity> auth = authRepository.findByUsername(loginDto.getUsername());
 
         if (auth.isEmpty()) {
-            throw new InvalidCredentialsException("Invalid username");
+            throw InvalidCredentialsException.create("Invalid username");
         }
 
         if (!auth.get().getPassword().equals(loginDto.getPassword())) {
-            throw new InvalidCredentialsException("Invalid password");
+            throw InvalidCredentialsException.create("Invalid password");
         }
 
         AuthenticatedUserDto authenticatedUserDto = new AuthenticatedUserDto();

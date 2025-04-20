@@ -3,7 +3,7 @@ package org.dreamsellers.controller;
 import io.swagger.models.Response;
 import lombok.AllArgsConstructor;
 import org.api.BookingsApi;
-import org.dreamsellers.error.UserNotFoundException;
+import org.dreamsellers.errors.UserNotFoundException;
 import org.dreamsellers.service.BookingsService;
 import org.model.BookingResponseDto;
 import org.model.CreateBookingDto;
@@ -25,7 +25,7 @@ public class BookingsController implements BookingsApi {
 
             return new ResponseEntity<>(bookings, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
+            throw UserNotFoundException.create(e.getMessage());
         }
     }
 
