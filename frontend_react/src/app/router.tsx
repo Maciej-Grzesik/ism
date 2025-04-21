@@ -1,35 +1,31 @@
-import { paths } from '@/config/paths';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { createBrowserRouter } from 'react-router';
-import { RouterProvider } from 'react-router/dom';
+import { RouterProvider } from 'react-router';
+import { useMemo } from 'react';
+import { paths } from '@/config/paths';
 
-// import { paths } from '@/config/paths';
-// import { ProtectedRoute } from '@/lib/auth';
-
-const convert = (queryClient: QueryClient) => (m: any) => {
-    const { clientLoader, clientAction, default: Component, ...rest } = m;
-    return {
-      ...rest,
-      loader: clientLoader?.(queryClient),
-      action: clientAction?.(queryClient),
-      Component,
-    };
+const convert = (m: any) => {
+  const { clientLoader, clientAction, default: Component, ...rest } = m;
+  return {
+    ...rest,
+    loader: clientLoader?.(),
+    action: clientAction?.(),
+    Component,
   };
+};
 
-  export const createAppRouter = (queryClient: QueryClient) =>
-    createBrowserRouter([
-      {
-        path: paths.auth.login.path,
-        lazy: () => import('./routes/auth/login').then(convert(queryClient)),
-      },
-    ]);
+const createAppRouter = () =>
+  createBrowserRouter([
+    {
+      path: paths.auth.login.path,
+      lazy: () => import('./routes/auth/login').then(convert),
+    },
+    {
+      path: paths.home.path,
+      lazy: () => import('./routes/app/dashboard').then(convert),
+    },
+  ]);
 
 export const AppRouter = () => {
-    const queryClient = useQueryClient();
-      
-    const router = useMemo(() => createAppRouter(queryClient), [queryClient]);
-      
-    return <RouterProvider router={router} />;
-  };
-      
+  const router = useMemo(() => createAppRouter(), []);
+  return <RouterProvider router={router} />;
+};

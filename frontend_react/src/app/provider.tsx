@@ -1,15 +1,10 @@
-
-
-import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react'
-import { ErrorBoundary } from 'react-error-boundary';
-import { HelmetProvider } from 'react-helmet-async';
 
 type AppProviderProps = {
     children: React.ReactNode;
 }
 
-export const AppProvider = ({ children }: AppProviderProps) => {
+export const AppProvider = ({ children }: AppProviderProps) => {   
     return (
         <React.Suspense
             fallback={
@@ -19,15 +14,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             }
         >
 
-            <ErrorBoundary>
-                <HelmetProvider>
-                    <QueryClientProvider>
-                        <AuthLoader>
+
                             {children}
-                        </AuthLoader>
-                    </QueryClientProvider>
-                </HelmetProvider>
-            </ErrorBoundary>
+         
         </React.Suspense>
     )
 }
