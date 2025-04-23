@@ -1,0 +1,1 @@
+MetricsController.getMostInvokedMethod() - 2
