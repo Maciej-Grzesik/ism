@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-DreamSellersApplication<DreamSellers>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "org.dreamsellers.DreamSellersApplication",
+      "projectName": "DreamSellers",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

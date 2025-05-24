@@ -1,13 +1,174 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" vocab="http://schema.org/" prefix="schema: http://schema.org/">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>DreamSellers</title>
+
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "url": "http://localhost:5173/",
+          "name": "DreamSellers"
+        },
+        {
+          "@id": "#product-1",
+          "@type": "Product",
+          "productID": "1",
+          "description": "Enjoy a peaceful kayaking tour during golden hour with an experienced guide.",
+          "category": "adventure",
+          "image": "https://cdn.example.com/images/kayak1.jpg",
+          "name": "Sunset Kayaking Tour",
+          "offers": {
+            "@type": "Offer",
+            "url": "http://localhost:5173/#product-1",
+            "price": "49.99",
+            "priceCurrency": "PLN",
+            "availability": "http://schema.org/InStock",
+            "seller": {
+              "@type": "Organization",
+              "name": "Seller 1"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Lake Bled, Slovenia"
+            }
+          }
+        },
+        {
+          "@id": "#product-2",
+          "@type": "Product",
+          "productID": "2",
+          "description": "Explore scenic mountain trails on a guided hiking adventure. Breathtaking views guaranteed.",
+          "category": "adventure",
+          "image": "https://cdn.example.com/images/hiking2.jpg",
+          "name": "Mountain Hiking Expedition",
+          "offers": {
+            "@type": "Offer",
+            "url": "http://localhost:5173/#product-2",
+            "price": "79.99",
+            "priceCurrency": "PLN",
+            "availability": "http://schema.org/InStock",
+            "seller": {
+              "@type": "Organization",
+              "name": "Seller 2"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Tatra Mountains, Poland"
+            }
+          }
+        },
+        {
+          "@id": "#product-3",
+          "@type": "Product",
+          "productID": "3",
+          "description": "Discover the historic Old Town on a comfortable city bike with a knowledgeable local guide.",
+          "category": "city_tour",
+          "image": "https://cdn.example.com/images/bike3.jpg",
+          "name": "City Bike Tour - Old Town",
+          "offers": {
+            "@type": "Offer",
+            "url": "http://localhost:5173/#product-3",
+            "price": "35.00",
+            "priceCurrency": "PLN",
+            "availability": "http://schema.org/OutOfStock",
+            "seller": {
+              "@type": "Organization",
+              "name": "Seller 1"
+            },
+            "areaServed": {
+              "@type": "Place",
+              "name": "Warsaw, Poland"
+            }
+          }
+        }
+      ]
+    }
+    </script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+  <body typeof="schema:WebSite">
+    <div id="root">
+      <div property="mainEntity" typeof="schema:Product" resource="#product-1">
+        <h1 property="name">Sunset Kayaking Tour</h1>
+        <img src="https://cdn.example.com/images/kayak1.jpg" property="image" alt="Kayak tour" />
+        <p property="description">Enjoy a peaceful kayaking tour during golden hour with an experienced guide.</p>
+        <p><strong>Category:</strong> <span property="category">adventure</span></p>
+
+        <div property="offers" typeof="schema:Offer">
+          <meta property="priceCurrency" content="PLN" />
+          <p><strong>Price:</strong> <span property="price">49.99</span> PLN</p>
+          <p><strong>Availability:</strong> <link property="availability" href="http://schema.org/InStock" />In stock</p>
+          <p><strong>Location:</strong>
+            <span property="areaServed" typeof="schema:Place">
+              <span property="name">Lake Bled, Slovenia</span>
+            </span>
+          </p>
+          <p><strong>Seller:</strong>
+            <span property="seller" typeof="schema:Organization">
+              <span property="name">Seller 1</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <hr/>
+
+      <div property="mainEntity" typeof="schema:Product" resource="#product-2">
+        <h1 property="name">Mountain Hiking Expedition</h1>
+        <img src="https://cdn.example.com/images/hiking2.jpg" property="image" alt="Mountain hiking" />
+        <p property="description">Explore scenic mountain trails on a guided hiking adventure. Breathtaking views guaranteed.</p>
+        <p><strong>Category:</strong> <span property="category">adventure</span></p>
+
+        <div property="offers" typeof="schema:Offer">
+          <meta property="priceCurrency" content="PLN" />
+          <p><strong>Price:</strong> <span property="price">79.99</span> PLN</p>
+          <p><strong>Availability:</strong> <link property="availability" href="http://schema.org/InStock" />In stock</p>
+          <p><strong>Location:</strong>
+            <span property="areaServed" typeof="schema:Place">
+              <span property="name">Tatra Mountains, Poland</span>
+            </span>
+          </p>
+          <p><strong>Seller:</strong>
+            <span property="seller" typeof="schema:Organization">
+              <span property="name">Seller 2</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <hr/>
+
+      <div property="mainEntity" typeof="schema:Product" resource="#product-3">
+        <h1 property="name">City Bike Tour - Old Town</h1>
+        <img src="https://cdn.example.com/images/bike3.jpg" property="image" alt="City bike tour" />
+        <p property="description">Discover the historic Old Town on a comfortable city bike with a knowledgeable local guide.</p>
+        <p><strong>Category:</strong> <span property="category">city_tour</span></p>
+
+        <div property="offers" typeof="schema:Offer">
+          <meta property="priceCurrency" content="PLN" />
+          <p><strong>Price:</strong> <span property="price">35.00</span> PLN</p>
+          <p><strong>Availability:</strong> <link property="availability" href="http://schema.org/OutOfStock" />Out of stock</p>
+          <p><strong>Location:</strong>
+            <span property="areaServed" typeof="schema:Place">
+              <span property="name">Warsaw, Poland</span>
+            </span>
+          </p>
+          <p><strong>Seller:</strong>
+            <span property="seller" typeof="schema:Organization">
+              <span property="name">Seller 1</span>
+            </span>
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <script type="module" src="/src/main.tsx?t=1747747660691"></script>
   </body>
 </html>
